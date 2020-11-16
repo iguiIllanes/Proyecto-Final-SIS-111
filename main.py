@@ -31,7 +31,6 @@ eventos = navegador.find_elements_by_class_name("general_event")
 
 eventos_text = []
 for evento in eventos:
-    # eventos_text.append(evento.text)
-    print(evento.text)
+    eventos_text.append(evento.text)
 
-# print(eventos_text)
+print(eventos_text)
