@@ -24,5 +24,14 @@ elemento.send_keys(password)
 siguiente_btn = navegador.find_element_by_xpath('//*[@id="passwordNext"]/div/button') #Encuentra el boton siguiente
 siguiente_btn.click()
 print("Tiene 30 segundos para poder conceder el acceso a su cuenta de google desde el telefono")
-sleep(30)
+sleep(15)
 navegador.get(url+"my_calendar")
+
+eventos = navegador.find_elements_by_class_name("general_event")
+
+eventos_text = []
+for evento in eventos:
+    # eventos_text.append(evento.text)
+    print(evento.text)
+
+# print(eventos_text)
