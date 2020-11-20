@@ -11,26 +11,40 @@ password = "sj7n\-QY4@[t"
 url = "https://neo.ucb.edu.bo/"
 
 navegador = webdriver.Chrome() #Inicia una instancia de Chrome con Selenium
-navegador.get(url)
-elemento = navegador.find_element_by_id("google_apps_btn") #Encuentra el boton de iniciar sesion con google en neo.ucb.bo a traves de su id
-elemento.click()
-elemento = navegador.find_element_by_xpath('//*[@id="identifierId"]') #Encuentra el campo para el correo electronico gracias a su XPATH
-elemento.send_keys(nombre_de_usuario)
-siguiente_btn = navegador.find_element_by_xpath('//*[@id="identifierNext"]/div/button') #Encuentra el boton siguiente
-siguiente_btn.click()
-sleep(3) #El programa espera 3 segundos hasta que la proxima parte de la pagina pueda cargar
-elemento = navegador.find_element_by_xpath('//*[@id="password"]/div[1]/div/div[1]/input') #Encuentra el campo para la contrasena gracias a su XPATH
-elemento.send_keys(password)
-siguiente_btn = navegador.find_element_by_xpath('//*[@id="passwordNext"]/div/button') #Encuentra el boton siguiente
-siguiente_btn.click()
-print("Tiene 30 segundos para poder conceder el acceso a su cuenta de google desde el telefono")
-sleep(15)
-navegador.get(url+"my_calendar")
 
-eventos = navegador.find_elements_by_class_name("general_event")
+def google_sign_in(nombre_de_usuario, password):
+    navegador.get(url)
+    elemento = navegador.find_element_by_id("google_apps_btn") #Encuentra el boton de iniciar sesion con google en neo.ucb.bo a traves de su id
+    elemento.click()
+    elemento = navegador.find_element_by_xpath('//*[@id="identifierId"]') #Encuentra el campo para el correo electronico gracias a su XPATH
+    elemento.send_keys(nombre_de_usuario)
+    siguiente_btn = navegador.find_element_by_xpath('//*[@id="identifierNext"]/div/button') #Encuentra el boton siguiente
+    siguiente_btn.click()
+    sleep(3) #El programa espera 3 segundos hasta que la proxima parte de la pagina pueda cargar
+    elemento = navegador.find_element_by_xpath('//*[@id="password"]/div[1]/div/div[1]/input') #Encuentra el campo para la contrasena gracias a su XPATH
+    elemento.send_keys(password)
+    siguiente_btn = navegador.find_element_by_xpath('//*[@id="passwordNext"]/div/button') #Encuentra el boton siguiente
+    siguiente_btn.click()
+    print("Tiene 30 segundos para poder conceder el acceso a su cuenta de google desde el telefono")
+    sleep(15)
+    navegador.get(url+"my_calendar")
 
-eventos_text = []
-for evento in eventos:
-    eventos_text.append(evento.text)
+#Main
+google_sign_in(nombre_de_usuario, password)
 
-print(eventos_text)
+
+
+# eventos = navegador.find_elements_by_class_name("general_event")
+
+# eventos_text = []
+# for evento in eventos:
+#     eventos_text.append(evento.text)
+
+# print(eventos_text)
+
+materias = navegador.find_elements_by_class_name("calendar-item")
+materias_text = {}
+for materia in materias:
+    materias_text[materia.text] = materia.find_element_by_tag_name('label').get_attribute("data-color")
+
+print(materias_text)
