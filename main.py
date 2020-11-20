@@ -10,6 +10,8 @@ password = "sj7n\-QY4@[t"
 
 url = "https://neo.ucb.edu.bo/"
 
+materias_blacklist = ['Centro', 'Grupo 1', 'Grupo 3', 'Grupo 4', 'Personal']
+
 navegador = webdriver.Chrome() #Inicia una instancia de Chrome con Selenium
 
 def google_sign_in(nombre_de_usuario, password):
@@ -45,6 +47,7 @@ google_sign_in(nombre_de_usuario, password)
 materias = navegador.find_elements_by_class_name("calendar-item")
 materias_text = {}
 for materia in materias:
-    materias_text[materia.text] = materia.find_element_by_tag_name('label').get_attribute("data-color")
+    if materia.text not in materias_blacklist:
+        materias_text[materia.text] = materia.find_element_by_tag_name('label').get_attribute('data-color')
 
 print(materias_text)
