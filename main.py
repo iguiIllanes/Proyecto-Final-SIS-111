@@ -1,22 +1,72 @@
-# Author: Ignacio Andres Illanes Bequer
-# github: https://github.com/iguiIllanes
+#Author: Ignacio Illanes Bequer
+#Github:https://github.com/iguiIllanes/
 
+import tkinter as tk
+from tkinter import messagebox
+from tkinter import ttk
+from PIL import ImageTk, Image
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.color import Color
 from time import sleep
-import re
 from ics import Calendar, Event
 
-nombre_de_usuario = "ignacio.illanes@ucb.edu.bo"
-password = "sj7n\-QY4@[t"
+
+background_color = '#0C8699'
 
 url = "https://neo.ucb.edu.bo/"
 
+materias_blacklist = []
 
-materias_blacklist = ['Centro', 'Grupo 1', 'Grupo 3', 'Grupo 4', 'Personal']
+navegador = webdriver.Chrome()
+navegador.set_window_position(-10000, 1150)
 
-navegador = webdriver.Chrome() #Inicia una instancia de Chrome con Selenium
+correo=''
+pswd=''
+def get_user_input():
+    correo = email_Entry.get()
+    pswd = pass_Entry.get()
+    if pswd == '' or correo == '':
+        messagebox.showwarning('Aviso', 'Correo o contraseña vacios.')
+    elif '@ucb.edu.bo' in correo:
+        google_sign_in(correo, pswd)
+        generate_calendar()
+        return
+    else:
+        messagebox.showwarning('Aviso', 'Correo incorrecto. debe ser un correo con dominio @ucb.edu.bo')
+
+
+def format_blacklist(blacklist_string):
+    aux=''
+    for letra in blacklist_string:
+        if letra != '/': aux+=letra
+        else:
+            materias_blacklist.append(aux)
+            aux=''
+    materias_blacklist.append(aux)
+    return
+
+
+def open_blacklist_window():
+    blacklist_window = tk.Toplevel()
+    blacklist_window.title('Editar lista negra')
+    blacklist_window.geometry('{}x{}+{}+{}'.format(700, 200, half_width, half_height))
+    blacklist_window['background'] = background_color
+    blacklist_text = tk.Label(blacklist_window, text='Escribe el NOMBRE COMPLETO de la asignatura o grupo del calendario que quieres que no se tome en cuenta.\nSeparalos con /', bg=background_color, fg='#fff')
+    blacklist_text.pack()
+    blacklist_texfield = tk.Entry(blacklist_window, width=50)
+    blacklist_texfield.pack()
+    blacklist_buttons_frame = tk.Frame(blacklist_window, bg=background_color)
+    blacklist_buttons_frame.pack(expand=True)
+    blacklist_cancel_button = tk.Button(blacklist_buttons_frame, text="Cancelar", height=2, command=lambda:blacklist_window.destroy())
+    blacklist_cancel_button.pack(padx=(0,50), side=tk.LEFT)
+    blacklist_add_button = tk.Button(blacklist_buttons_frame, text="Añadir", height=2, command=lambda:[format_blacklist(blacklist_texfield.get()), blacklist_window.destroy()])
+    blacklist_add_button.pack(side=tk.LEFT)
+    blacklist_window.mainloop()
+
+
+
+
 
 def google_sign_in(nombre_de_usuario, password):
     navegador.get(url)
@@ -85,17 +135,66 @@ def retornar_cal():
                 calendario.append({"name":event_name, "fecha":fecha_new})
     return calendario
     
-#Main
-google_sign_in(nombre_de_usuario, password)
-calendar = Calendar()
-calendario = retornar_cal()
-for evento in calendario:
-    event = Event()
-    event.name = evento["name"]
-    event.begin = evento["fecha"]
-    calendar.events.add(event)
-    calendar.events
 
-with open('CalendarioNEO.ics', 'w') as mi_archivo:
-    mi_archivo.writelines(calendar)
-print("Calendario Generado!")
+def generate_calendar():
+    calendar = Calendar()
+    calendario = retornar_cal()
+    for evento in calendario:
+        event = Event()
+        event.name = evento["name"]
+        event.begin = evento["fecha"]
+        calendar.events.add(event)
+        calendar.events
+
+    with open('CalendarioNEO.ics', 'w') as mi_archivo:
+        mi_archivo.writelines(calendar)
+    navegador.quit()
+
+    messagebox.showinfo('Exito', 'Calendario generado!')
+
+
+#Main
+window = tk.Tk(className=' NEO Calendar Generator')
+window_width = 900
+window_height = 500
+half_width = int(window.winfo_screenwidth()/2 - window_width/2)
+half_height = int(window.winfo_screenheight()/2 - window_height/2)
+window.geometry('{}x{}+{}+{}'.format(window_width, window_height, half_width, half_height))
+window['background']=background_color
+
+
+
+logo_frame = tk.Frame(window)
+logo_frame.pack(expand=True)
+
+logo_img = ImageTk.PhotoImage(Image.open('resources/images/neo-lms-logo.png'))
+logo = tk.Label(logo_frame, image=logo_img, height=250)
+logo.pack(expand=True)
+
+
+
+credentials_frame = tk.Frame(window,bg=background_color)
+credentials_frame.pack(expand=True)
+
+email_Entry = tk.Entry(credentials_frame, width=30)
+email_Label = tk.Label(credentials_frame, text='Correo:', bg=background_color, fg='#fff')
+email_Label.pack(padx=(0,10),  side=tk.LEFT)
+email_Entry.pack(side=tk.LEFT)
+
+pass_Entry = tk.Entry(credentials_frame, width=30)
+pass_Label = tk.Label(credentials_frame, text='Contraseña:', bg=background_color, fg='#fff')
+pass_Label.pack(padx=(80,10),  side= tk.LEFT)
+pass_Entry.pack(side=tk.LEFT)
+
+
+
+buttons_frame = tk.Frame(window, bg=background_color)
+buttons_frame.pack(expand=True)
+
+blacklist_button = tk.Button(buttons_frame, text='Lista Negra', height=2, command=lambda:open_blacklist_window())
+blacklist_button.pack(side=tk.LEFT)
+
+exportar_button = tk.Button(buttons_frame, text='Exportar Calendario', height=2, command=lambda:[messagebox.showinfo('Aviso', 'Espera al mensaje que indica que el calendario se exporto con exito.'), get_user_input()])
+exportar_button.pack(padx=(50,0), side=tk.LEFT)
+
+window.mainloop()
