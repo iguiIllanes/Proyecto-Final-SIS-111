@@ -19,11 +19,11 @@ url = "https://neo.ucb.edu.bo/"
 materias_blacklist = []
 
 navegador = webdriver.Chrome()
-navegador.set_window_position(-10000, 1150)
+# navegador.set_window_position(-10000, 1150)
 
 correo=''
 pswd=''
-def get_user_input():
+def get_user_input(): #obtiene el correo y la contrasena para google sign in
     correo = email_Entry.get()
     pswd = pass_Entry.get()
     if pswd == '' or correo == '':
@@ -36,7 +36,7 @@ def get_user_input():
         messagebox.showwarning('Aviso', 'Correo incorrecto. debe ser un correo con dominio @ucb.edu.bo')
 
 
-def format_blacklist(blacklist_string):
+def format_blacklist(blacklist_string): #Formatea el texto de open_blacklist_window para que se pueda colocar en materias_blacklist
     aux=''
     for letra in blacklist_string:
         if letra != '/': aux+=letra
@@ -47,7 +47,7 @@ def format_blacklist(blacklist_string):
     return
 
 
-def open_blacklist_window():
+def open_blacklist_window(): #Crea una ventana para anadir elementos materias_blacklist
     blacklist_window = tk.Toplevel()
     blacklist_window.title('Editar lista negra')
     blacklist_window.geometry('{}x{}+{}+{}'.format(700, 200, half_width, half_height))
@@ -68,7 +68,7 @@ def open_blacklist_window():
 
 
 
-def google_sign_in(nombre_de_usuario, password):
+def google_sign_in(nombre_de_usuario, password): #Inicia sesion en NEO-LMS con la cuenta de google
     navegador.get(url)
     elemento = navegador.find_element_by_id("google_apps_btn") #Encuentra el boton de iniciar sesion con google en neo.ucb.bo a traves de su id
     elemento.click()
@@ -85,7 +85,7 @@ def google_sign_in(nombre_de_usuario, password):
     sleep(15)
     navegador.get(url+"my_calendar") 
 
-def materia_color_link():
+def materia_color_link(): #Crea un vinculo entre el codigo de la materia y su color asignado en el calendario
     materias = navegador.find_elements_by_class_name("calendar-item")
     materias_text = {}
     for materia in materias:
@@ -99,7 +99,7 @@ def materia_color_link():
             materias_text[materia.find_element_by_tag_name('label').get_attribute('data-color')] = materia_new
     return materias_text
 
-def retornar_cal():
+def retornar_cal(): #Retorna un arreglo de diccionarios con la informacion extraida del calendario
     calendario = []
     fechas = navegador.find_elements_by_class_name('editable')
     for fecha in fechas:
@@ -136,7 +136,7 @@ def retornar_cal():
     return calendario
     
 
-def generate_calendar():
+def generate_calendar(): #Genera el archivo ics con los eventos del calendario de NEO-LMS
     calendar = Calendar()
     calendario = retornar_cal()
     for evento in calendario:
@@ -154,7 +154,7 @@ def generate_calendar():
 
 
 #Main
-window = tk.Tk(className=' NEO Calendar Generator')
+window = tk.Tk(className=' NEO Calendar Generator') #Crea la GUI principal
 window_width = 900
 window_height = 500
 half_width = int(window.winfo_screenwidth()/2 - window_width/2)
