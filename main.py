@@ -104,7 +104,7 @@ def retornar_cal(): #Retorna un arreglo de diccionarios con la informacion extra
     fechas = navegador.find_elements_by_class_name('editable')
     for fecha in fechas:
         date = fecha.get_attribute('data-add-event')
-        separar=False #Desde lineas 44-61 formatea el texto para cumplir con el formato para el argumento de TODO
+        separar=False #Desde lineas 44-61 formatea el texto para cumplir con el formato para la exportacion del calendario
         anio=date[:4]
         mes=""
         dia=""
